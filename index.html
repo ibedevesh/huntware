@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Huntware - Product Search</title>
+    <style>
+      /* Common styles for both PC and mobile */
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #333;
+      }
+
+      .header {
+        background-color: #ffffff;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .logo {
+        color: #764ba2;
+        font-size: 28px;
+        font-weight: 600;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+      }
+
+      .nav-links a {
+        margin-left: 25px;
+        text-decoration: none;
+        color: #555;
+        font-weight: 400;
+        transition: color 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        color: #764ba2;
+      }
+
+      .sign-in {
+        background-color: #764ba2;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+        margin-left: 25px;
+      }
+
+      .sign-in:hover {
+        background-color: #667eea;
+      }
+
+      .profile-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-left: 25px;
+        border: 2px solid #764ba2;
+        object-fit: cover;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 40px auto;
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .welcome-banner {
+        background-color: #f3f3f3;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        text-align: center;
+        color: #555;
+      }
+
+      .search-bar {
+        text-align: center;
+        margin: 30px 0;
+      }
+
+      .search-bar input {
+        width: 80%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+      }
+
+      .search-bar input:focus {
+        border-color: #764ba2;
+        outline: none;
+      }
+
+      h1 {
+        color: #764ba2;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .nav-buttons {
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .nav-buttons button {
+        background-color: transparent;
+        border: none;
+        color: #555;
+        font-size: 16px;
+        margin-right: 15px;
+        cursor: pointer;
+        font-weight: 400;
+        transition: color 0.3s ease;
+      }
+
+      .nav-buttons button.active {
+        color: #764ba2;
+        font-weight: 600;
+      }
+
+      .product-list {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .product-item {
+        display: flex;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .product-icon {
+        width: 80px;
+        height: 80px;
+        margin-right: 20px;
+        background-color: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #999;
+        border-radius: 8px;
+      }
+
+      .product-info {
+        flex-grow: 1;
+      }
+
+      .product-name {
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 5px 0;
+      }
+
+      .product-description {
+        color: #666;
+        margin: 5px 0;
+        font-size: 14px;
+      }
+
+      .product-tags {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+
+      .tag {
+        background-color: #f0f0f0;
+        color: #666;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        margin-right: 8px;
+        margin-bottom: 5px;
+      }
+
+      .product-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .upvote-count {
+        background-color: #f0f0f0;
+        color: #333;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .see-reviews-btn {
+        background-color: #764ba2;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+      }
+
+      .see-reviews-btn:hover {
+        background-color: #667eea;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 30px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 600px;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: #333;
+        text-decoration: none;
+      }
+
+      .review-list {
+        margin-top: 30px;
+      }
+
+      .review-item {
+        border-bottom: 1px solid #eee;
+        padding: 15px 0;
+      }
+
+      .review-form {
+        margin-top: 30px;
+      }
+
+      .review-form textarea {
+        width: 100%;
+        height: 120px;
+        margin-bottom: 15px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+      }
+
+      .review-form textarea:focus {
+        border-color: #764ba2;
+        outline: none;
+      }
+
+      .review-form button {
+        background-color: #764ba2;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+      }
+
+      .review-form button:hover {
+        background-color: #667eea;
+      }
+
+      .upvote-button {
+        background-color: #f0f0f0;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+        font-weight: 500;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      .upvote-button.liked {
+        background-color: #764ba2;
+        color: white;
+      }
+
+      .upvote-icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      /* Mobile-specific styles */
+      @media (max-width: 768px) {
+        .header {
+          padding: 10px 15px;
+        }
+
+        .logo {
+          font-size: 24px;
+        }
+
+        .nav-links a {
+          display: none;
+        }
+
+        .nav-links .sign-in,
+        .nav-links .profile-image {
+          margin-left: 15px;
+        }
+
+        .container {
+          padding: 20px;
+          margin: 20px 10px;
+        }
+
+        .welcome-banner {
+          padding: 15px;
+        }
+
+        .search-bar input {
+          width: 90%;
+        }
+
+        .product-item {
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 15px 0;
+        }
+
+        .product-icon {
+          width: 60px;
+          height: 60px;
+          margin-right: 0;
+          margin-bottom: 10px;
+        }
+
+        .product-info {
+          width: 100%;
+        }
+
+        .product-name {
+          font-size: 18px;
+        }
+
+        .product-description {
+          font-size: 14px;
+        }
+
+        .product-tags {
+          margin-top: 5px;
+        }
+
+        .tag {
+          font-size: 10px;
+          padding: 2px 8px;
+        }
+
+        .product-actions {
+          width: 100%;
+          justify-content: space-between;
+          margin-top: 10px;
+        }
+
+        .upvote-count {
+          font-size: 12px;
+          padding: 4px 8px;
+        }
+
+        .see-reviews-btn {
+          font-size: 12px;
+          padding: 6px 12px;
+        }
+
+        .modal-content {
+          width: 90%;
+          padding: 20px;
+        }
+
+        .review-form textarea {
+          height: 100px;
+        }
+
+        .review-form button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="logo">
+        <a href="index.html">
+          <img
+            src="https://github.com/ibedevesh/files/blob/main/cropped%20(1).jpg?raw=true"
+            alt="Logo"
+            style="width: 48px; height: auto"
+          />
+        </a>
+      </div>
+      <nav class="nav-links">
+        <a href="#"></a>
+        <a href="#"></a>
+        <a href="#"></a>
+        <a href="#"></a>
+        <a href="submit.html">Submit</a>
+        <button class="sign-in" id="signInButton">Sign in</button>
+        <img
+          src=""
+          alt="Profile Image"
+          class="profile-image"
+          id="profileImage"
+          style="display: none"
+        />
+      </nav>
+    </header>
+
+    <div class="container">
+      <div class="welcome-banner">
+        <h2>Welcome to Huntware! 🙋‍♂️</h2>
+        <p>Find products that is best fit for you. 🧐</p>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search anything..." />
+      </div>
+      <div class="nav-buttons">
+        <button class="active">Results</button>
+      </div>
+
+      <div id="productList" class="product-list">
+        <!-- Products will be dynamically added here -->
+      </div>
+    </div>
+
+    <!-- Reviews Modal -->
+    <div id="reviewsModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="reviewsProductName"></h2>
+        <div id="reviewsList" class="review-list"></div>
+        <div class="review-form">
+          <h3>Add a Review</h3>
+          <textarea
+            id="reviewText"
+            placeholder="Write your review here..."
+          ></textarea>
+          <button id="submitReview">Submit Review</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+    <script>
+      // Initialize Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyA_Mt-pktNrOF0h2SCdEkjj3na34hyShNE",
+        authDomain: "search-36f0e.firebaseapp.com",
+        projectId: "search-36f0e",
+        storageBucket: "search-36f0e.appspot.com",
+        messagingSenderId: "232897404375",
+        appId: "1:232897404375:web:46e3ccee53b4dbe7547f92",
+        measurementId: "G-T3EM7N9CMM",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+      const auth = firebase.auth();
+
+      // Search functionality
+      const searchInput = document.getElementById("searchInput");
+      const productList = document.getElementById("productList");
+
+      searchInput.addEventListener("input", async (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+
+        if (searchTerm.length < 2) {
+          loadInitialProducts();
+          return;
+        }
+
+        const productsRef = db.collection("products");
+        const snapshot = await productsRef.get();
+
+        const filteredProducts = snapshot.docs.filter((doc) => {
+          const data = doc.data();
+          return (
+            data.name.toLowerCase().includes(searchTerm) ||
+            data.description.toLowerCase().includes(searchTerm) ||
+            (data.tags &&
+              data.tags.some((tag) => tag.toLowerCase().includes(searchTerm)))
+          );
+        });
+
+        displayProducts(filteredProducts);
+      });
+
+      function displayProducts(products) {
+        productList.innerHTML = "";
+        products.forEach((product) => {
+          const data = product.data();
+          const productHTML = `
+          <div class="product-item" data-product-id="${product.id}">
+            <img src="${data.imageurl || "default-image.png"}" alt="${data.name}" class="product-icon">
+            <div class="product-info">
+                <h3><a href="${data.link}" class="product-name" target="_blank">${data.name}</a></h3>
+              <p class="product-description">${data.description}</p>
+              <div class="product-tags">
+                ${data.tags ? data.tags.map((tag) => `<span class="tag">${tag}</span>`).join("") : ""}
+              </div>
+            </div>
+            <div class="product-actions">
+              <button class="upvote-button" data-product-id="${product.id}">
+                <svg class="upvote-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 4L3 15H21L12 4Z" fill="currentColor"/>
+                </svg>
+                <span class="upvote-count">${data.likes || 0}</span>
+              </button>
+              <button class="see-reviews-btn" data-product-id="${product.id}">See Reviews</button>
+            </div>
+          </div>
+        `;
+          productList.innerHTML += productHTML;
+        });
+
+        // Add event listeners to buttons
+        document.querySelectorAll(".see-reviews-btn").forEach((button) => {
+          button.addEventListener("click", (e) =>
+            openReviewsModal(e.target.getAttribute("data-product-id")),
+          );
+        });
+
+        document.querySelectorAll(".upvote-button").forEach((button) => {
+          button.addEventListener("click", (e) =>
+            handleUpvote(e.currentTarget),
+          );
+        });
+
+        // Check if user has liked products and update UI
+        if (auth.currentUser) {
+          checkUserLikes();
+        }
+      }
+
+      // Initial load of products
+      async function loadInitialProducts() {
+        const productsRef = db.collection("products");
+        const snapshot = await productsRef.get();
+        displayProducts(snapshot.docs);
+      }
+
+      loadInitialProducts();
+
+      // Redirect to login.html on sign-in button click
+      const signInButton = document.getElementById("signInButton");
+      signInButton.addEventListener("click", () => {
+        window.location.href = "login.html";
+      });
+
+      // Check auth state
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          // User is signed in
+          document.getElementById("signInButton").style.display = "none";
+          const profileImage = document.getElementById("profileImage");
+          profileImage.src = user.photoURL || "default-profile.png";
+          profileImage.style.display = "block";
+          checkUserLikes(); // Check user likes when signed in
+
+          // Add click event listener to profile image
+          profileImage.addEventListener("click", () => {
+            window.location.href = "profile.html";
+          });
+        } else {
+          // User is signed out
+          document.getElementById("signInButton").style.display = "block";
+          document.getElementById("profileImage").style.display = "none";
+        }
+      });
+
+      // Reviews Modal functionality
+      const modal = document.getElementById("reviewsModal");
+      const closeBtn = document.getElementsByClassName("close")[0];
+      const reviewsList = document.getElementById("reviewsList");
+      const reviewsProductName = document.getElementById("reviewsProductName");
+      const reviewText = document.getElementById("reviewText");
+      const submitReview = document.getElementById("submitReview");
+
+      closeBtn.onclick = function () {
+        modal.style.display = "none";
+      };
+
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      async function openReviewsModal(productId) {
+        const productDoc = await db.collection("products").doc(productId).get();
+        const productData = productDoc.data();
+        reviewsProductName.textContent = `Reviews for ${productData.name}`;
+
+        // Fetch and display reviews
+        const reviewsSnapshot = await db
+          .collection("products")
+          .doc(productId)
+          .collection("reviews")
+          .get();
+        reviewsList.innerHTML = "";
+        reviewsSnapshot.forEach((doc) => {
+          const reviewData = doc.data();
+          reviewsList.innerHTML += `
+          <div class="review-item">
+            <p>${reviewData.text}</p>
+            <small>By: ${reviewData.authorName} on ${new Date(reviewData.timestamp.toDate()).toLocaleString()}</small>
+          </div>
+        `;
+        });
+
+        submitReview.onclick = async function () {
+          if (auth.currentUser) {
+            const newReview = {
+              text: reviewText.value,
+              authorId: auth.currentUser.uid,
+              authorName: auth.currentUser.displayName || "Anonymous",
+              timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            };
+            await db
+              .collection("products")
+              .doc(productId)
+              .collection("reviews")
+              .add(newReview);
+            reviewText.value = "";
+            openReviewsModal(productId); // Refresh reviews
+          } else {
+            alert("Please sign in to post a review.");
+          }
+        };
+
+        modal.style.display = "block";
+      }
+
+      async function handleUpvote(button) {
+        if (!auth.currentUser) {
+          alert("Please sign in to upvote products.");
+          return;
+        }
+
+        const productId = button.getAttribute("data-product-id");
+        const userId = auth.currentUser.uid;
+        const productRef = db.collection("products").doc(productId);
+        const userLikesRef = db.collection("userLikes").doc(userId);
+
+        try {
+          await db.runTransaction(async (transaction) => {
+            const productDoc = await transaction.get(productRef);
+            const userLikesDoc = await transaction.get(userLikesRef);
+
+            if (!productDoc.exists) {
+              throw "Product does not exist!";
+            }
+
+            const productData = productDoc.data();
+            const userLikes = userLikesDoc.exists
+              ? userLikesDoc.data().likes || []
+              : [];
+
+            if (userLikes.includes(productId)) {
+              // User has already liked, remove the like
+              transaction.update(productRef, {
+                likes: firebase.firestore.FieldValue.increment(-1),
+              });
+              transaction.set(
+                userLikesRef,
+                {
+                  likes: userLikes.filter((id) => id !== productId),
+                },
+                { merge: true },
+              );
+              button.classList.remove("liked");
+            } else {
+              // User hasn't liked, add the like
+              transaction.update(productRef, {
+                likes: firebase.firestore.FieldValue.increment(1),
+              });
+              transaction.set(
+                userLikesRef,
+                {
+                  likes: [...userLikes, productId],
+                },
+                { merge: true },
+              );
+              button.classList.add("liked");
+            }
+          });
+
+          // After successful transaction, update the UI
+          const updatedProductDoc = await productRef.get();
+          const updatedProductData = updatedProductDoc.data();
+          button.querySelector(".upvote-count").textContent =
+            updatedProductData.likes || 0;
+        } catch (error) {
+          console.error("Error updating likes: ", error);
+        }
+      }
+
+      async function checkUserLikes() {
+        if (!auth.currentUser) return;
+
+        const userId = auth.currentUser.uid;
+        const userLikesDoc = await db.collection("userLikes").doc(userId).get();
+        if (userLikesDoc.exists) {
+          const userLikes = userLikesDoc.data().likes || [];
+          userLikes.forEach((productId) => {
+            const button = document.querySelector(
+              `.upvote-button[data-product-id="${productId}"]`,
+            );
+            if (button) {
+              button.classList.add("liked");
+            }
+          });
+        }
+      }
+
+      // Add a real-time listener for product updates
+      function addProductListener() {
+        db.collection("products").onSnapshot((snapshot) => {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === "modified") {
+              const productId = change.doc.id;
+              const newData = change.doc.data();
+              updateProductUI(productId, newData);
+            }
+          });
+        });
+      }
+
+      function updateProductUI(productId, newData) {
+        const productElement = document.querySelector(
+          `.product-item[data-product-id="${productId}"]`,
+        );
+        if (productElement) {
+          const upvoteCount = productElement.querySelector(".upvote-count");
+          if (upvoteCount) {
+            upvoteCount.textContent = newData.likes || 0;
+          }
+        }
+      }
+
+      // Call this function when the page loads
+      addProductListener();
+    </script>
+  </body>
+</html>
